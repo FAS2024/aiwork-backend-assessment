@@ -1,92 +1,94 @@
 # InsightOps Python Service
 
-FastAPI service for the backend assessment: **Mini Briefing Report Generator**.
+FastAPI service: **Mini Briefing Report Generator**.
 
-Features:
-
-- Create and retrieve briefings (structured company/analyst data)
-- Generate HTML reports via Jinja2 and a report view model
-- Fetch generated HTML
-- Validation: required fields, ticker uppercase, min 2 key points, min 1 risk, unique metric names per briefing
+- Create and retrieve briefings (company, analyst, key points, risks, optional metrics)
+- Generate HTML reports via Jinja2 (view model → template; no raw request data in templates)
+- Fetch generated HTML; validation (ticker uppercase, min 2 key points, min 1 risk, unique metric names per briefing)
 
 ## Prerequisites
 
 - Python 3.12
-- PostgreSQL running from repository root:
-
-```bash
-docker compose up -d postgres
-```
+- PostgreSQL (start from repo root: `docker compose up -d postgres`)
 
 ## Setup
 
 ```bash
 cd python-service
 python3.12 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
+# Windows:
+#   .venv\Scripts\activate
+# macOS/Linux:
+#   source .venv/bin/activate
+pip install -r requirements.txt
 cp .env.example .env
 ```
 
 ## Environment
 
-`.env.example` includes:
+Copy `.env.example` to `.env`. Relevant variables:
 
-- `DATABASE_URL`
-- `APP_ENV`
-- `APP_PORT`
+- `DATABASE_URL` — PostgreSQL connection string (default in `.env.example` points to local Docker Postgres)
+- `APP_ENV`, `APP_PORT` (optional)
 
-## Run Migrations (Manual SQL Runner)
+## Migrations
 
-Apply pending migrations:
+Migrations are manual SQL; a runner tracks applied files in `schema_migrations`.
+
+**Apply pending migrations:**
 
 ```bash
-cd python-service
-source .venv/bin/activate
+# From python-service, with venv activated
 python -m app.db.run_migrations up
 ```
 
-Roll back the latest migration:
+**Roll back the latest:**
 
 ```bash
-cd python-service
-source .venv/bin/activate
 python -m app.db.run_migrations down --steps 1
 ```
 
-How it works:
+- SQL files: `db/migrations/*.sql` (up) and `*.down.sql` (rollback)
+- Applied migrations are skipped on subsequent runs
 
-- SQL files live in `python-service/db/migrations/`
-- A `schema_migrations` table tracks applied filenames
-- Up files are applied in sorted filename order (`*.sql` or `*.up.sql`)
-- Rollback uses a paired `*.down.sql` file for each applied migration
-- Applied migration files are skipped on subsequent runs
-
-## Run Service
+## Run the service
 
 ```bash
-cd python-service
-source .venv/bin/activate
-python -m uvicorn app.main:app --reload --port 8000
+# From python-service, with venv activated
+uvicorn app.main:app --reload --port 8000
 ```
 
-## Run Tests
+API base: **http://localhost:8000**
+
+## Tests
 
 ```bash
-cd python-service
-source .venv/bin/activate
-python -m pytest
+# From python-service, with venv activated
+pytest
 ```
 
-## Project Layout
+- **Unit**: Report formatter (view model from briefing data)
+- **Integration**: Briefings API (create, get, generate, HTML, validation, 404s)
+- Uses in-memory SQLite for tests that need a DB; no Postgres required to run tests
 
-- `app/main.py`: FastAPI bootstrap and router wiring
-- `app/config.py`: environment config
-- `app/db/`: SQLAlchemy session management and migration runner
-- `db/migrations/`: SQL migration files
-- `app/models/`: ORM models
-- `app/schemas/`: Pydantic request/response schemas
-- `app/services/`: service-layer logic and template helpers
-- `app/api/`: route handlers
-- `app/templates/`: Jinja templates
-- `tests/`: test suite
+## API — Briefings
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/briefings` | Create briefing (JSON: companyName, ticker, sector, analystName, summary, recommendation, keyPoints, risks, metrics?) |
+| GET | `/briefings/{id}` | Get briefing (structured data) |
+| POST | `/briefings/{id}/generate` | Generate and store HTML report |
+| GET | `/briefings/{id}/html` | Get generated HTML (Content-Type: text/html) |
+
+## Project layout
+
+- `app/main.py` — FastAPI app, router wiring
+- `app/config.py` — Settings from env
+- `app/db/` — Session, migration runner
+- `db/migrations/` — SQL migrations
+- `app/models/` — ORM (briefings, points, metrics)
+- `app/schemas/` — Pydantic (BriefingCreate, BriefingRead, report view model)
+- `app/services/` — Briefing service, report formatter, Jinja report formatter
+- `app/api/` — Route handlers (health, sample-items, briefings)
+- `app/templates/` — Jinja templates (base, briefing_report)
+- `tests/` — Pytest suite

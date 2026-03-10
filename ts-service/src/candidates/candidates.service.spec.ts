@@ -93,4 +93,39 @@ describe('CandidatesService', () => {
     expect(result.candidateId).toBe('cand-1');
     expect(summaryRepo.save).toHaveBeenCalled();
   });
+
+  it('listSummaries returns workspace-scoped summaries', async () => {
+    const summaries = [
+      {
+        id: 's1',
+        candidateId: 'cand-1',
+        status: 'pending',
+        strengths: [],
+        concerns: [],
+        score: null,
+        summary: null,
+        recommendedDecision: null,
+        provider: null,
+        promptVersion: null,
+        errorMessage: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ];
+    jest.mocked(summaryRepo.find).mockResolvedValue(summaries as unknown as CandidateSummary[]);
+    const result = await service.listSummaries('cand-1', mockUser);
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe('s1');
+    expect(summaryRepo.find).toHaveBeenCalledWith({
+      where: { candidateId: 'cand-1' },
+      order: { createdAt: 'DESC' },
+    });
+  });
+
+  it('getSummary throws when summary not found', async () => {
+    jest.mocked(summaryRepo.findOne).mockResolvedValue(null);
+    await expect(
+      service.getSummary('cand-1', 'missing-summary-id', mockUser),
+    ).rejects.toThrow('Summary not found');
+  });
 });

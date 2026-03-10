@@ -22,7 +22,6 @@ class ReportFormatter:
         return template.render(title=title, body=body, generated_at=self.generated_timestamp())
 
     def render_briefing_report(self, view_model: ReportViewModel) -> str:
-        """Render the briefing report HTML from a report view model."""
         template = self._env.get_template("briefing_report.html")
         return template.render(
             report_title=view_model.report_title,

@@ -87,8 +87,8 @@ Respond with a single JSON object (no markdown) with exactly these keys:
 
     const obj = parsed as Record<string, unknown>;
     const score = this.numberInRange(obj.score, 0, 100, 50);
-    const strengths = this.stringArray(obj.strengths, 'strengths');
-    const concerns = this.stringArray(obj.concerns, 'concerns');
+    const strengths = this.stringArray(obj.strengths);
+    const concerns = this.stringArray(obj.concerns);
     const summary = typeof obj.summary === 'string' ? obj.summary.trim() : '';
     const recommendedDecision = this.validDecision(obj.recommendedDecision);
 
@@ -111,7 +111,7 @@ Respond with a single JSON object (no markdown) with exactly these keys:
     return Math.min(max, Math.max(min, Math.round(value)));
   }
 
-  private stringArray(value: unknown, label: string): string[] {
+  private stringArray(value: unknown): string[] {
     if (!Array.isArray(value)) return [];
     return value
       .filter((x): x is string => typeof x === 'string')

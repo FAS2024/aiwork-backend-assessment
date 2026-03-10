@@ -162,3 +162,25 @@ def test_validation_non_empty_key_points(client: TestClient) -> None:
     }
     resp = client.post("/briefings", json=payload)
     assert resp.status_code == 422
+
+
+def test_get_briefing_404(client: TestClient) -> None:
+    resp = client.get("/briefings/99999")
+    assert resp.status_code == 404
+
+
+def test_get_html_before_generate_404(client: TestClient) -> None:
+    payload = {
+        "companyName": "X",
+        "ticker": "X",
+        "sector": "S",
+        "analystName": "A",
+        "summary": "S",
+        "recommendation": "R",
+        "keyPoints": ["A", "B"],
+        "risks": ["R"],
+    }
+    create_resp = client.post("/briefings", json=payload)
+    bid = create_resp.json()["id"]
+    resp = client.get(f"/briefings/{bid}/html")
+    assert resp.status_code == 404

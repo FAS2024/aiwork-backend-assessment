@@ -7,7 +7,7 @@ from app.schemas.report import ReportMetric, ReportViewModel
 
 
 def briefing_to_report_view_model(briefing: Briefing) -> ReportViewModel:
-    """Transform a Briefing ORM instance into a report-friendly view model."""
+    """Build report view model from stored briefing."""
     key_points = [p.content for p in briefing.points if p.kind == "key_point"]
     risks = [p.content for p in briefing.points if p.kind == "risk"]
     metrics = [ReportMetric(name=m.name, value=m.value) for m in briefing.metrics]
