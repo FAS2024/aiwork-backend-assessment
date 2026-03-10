@@ -1,43 +1,87 @@
-# OS / editor
+# -----------------------------------------------------------------------------
+# Environment and secrets (never commit real .env)
+# -----------------------------------------------------------------------------
+.env
+.env.*
+.env.local
+.env.*.local
+!.env.example
+
+# -----------------------------------------------------------------------------
+# OS and editor
+# -----------------------------------------------------------------------------
 .DS_Store
+Thumbs.db
 .idea/
 .vscode/
 *.swp
 *.swo
+*~
 
-# Env files
-.env
-.env.*
-!.env.example
-
+# -----------------------------------------------------------------------------
 # Python
+# -----------------------------------------------------------------------------
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+*.egg-info/
+*.egg
+.venv/
+venv/
+ENV/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
-.venv/
-venv/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
 python-service/.venv/
 python-service/.pytest_cache/
 python-service/.coverage
+python-service/htmlcov/
 
+# -----------------------------------------------------------------------------
 # Node / TypeScript
+# -----------------------------------------------------------------------------
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
 ts-service/node_modules/
 ts-service/dist/
 ts-service/coverage/
+ts-service/.nyc_output/
 *.tsbuildinfo
 
-# Logs / temp
+# -----------------------------------------------------------------------------
+# Logs and temp
+# -----------------------------------------------------------------------------
 *.log
 logs/
 .tmp/
 .temp/
 tmp/
+temp/
 
-# Local storage
+# -----------------------------------------------------------------------------
+# Local and generated data
+# -----------------------------------------------------------------------------
 data/
 postgres-data/
+*.sqlite
+*.db
+
+# -----------------------------------------------------------------------------
+# Optional: uncomment to ignore assessment PDF or other large binaries
+# -----------------------------------------------------------------------------
+# *.pdf
