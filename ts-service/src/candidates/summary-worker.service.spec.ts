@@ -9,6 +9,7 @@ import { CandidateSummary, SummaryStatus } from '../entities/candidate-summary.e
 import { SummaryWorkerService } from './summary-worker.service';
 
 describe('SummaryWorkerService', () => {
+  let module: TestingModule;
   let worker: SummaryWorkerService;
   let queueService: QueueService;
   let summaryRepo: { findOne: jest.Mock; save: jest.Mock };
@@ -31,7 +32,7 @@ describe('SummaryWorkerService', () => {
     };
     summarizationProvider = mockProvider;
 
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       providers: [
         SummaryWorkerService,
         QueueService,
@@ -54,6 +55,10 @@ describe('SummaryWorkerService', () => {
     queueService = module.get<QueueService>(QueueService);
 
     worker.onModuleInit();
+  });
+
+  afterEach(async () => {
+    await module?.close();
   });
 
   it('updates summary to completed when provider succeeds', async () => {

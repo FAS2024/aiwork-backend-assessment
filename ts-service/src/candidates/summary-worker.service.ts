@@ -1,4 +1,9 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -16,8 +21,9 @@ export interface GenerateSummaryJobPayload {
 }
 
 @Injectable()
-export class SummaryWorkerService implements OnModuleInit {
+export class SummaryWorkerService implements OnModuleInit, OnModuleDestroy {
   private processing = false;
+  private intervalId: ReturnType<typeof setInterval> | null = null;
 
   constructor(
     private readonly queueService: QueueService,
@@ -34,7 +40,15 @@ export class SummaryWorkerService implements OnModuleInit {
       JOB_NAME,
       this.handleGenerateSummaryJob.bind(this),
     );
-    setInterval(() => this.tick(), 500);
+    this.intervalId = setInterval(() => this.tick(), 500);
+    (this.intervalId as NodeJS.Timeout).unref();
+  }
+
+  onModuleDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
   }
 
   enqueueGenerateSummary(summaryId: string, candidateId: string): void {

@@ -13,4 +13,4 @@ app.include_router(briefings_router)
 
 @app.get("/")
 def root() -> dict[str, str]:
-    return {"service": "InsightOps", "status": "starter-ready"}
+    return {"service": "InsightOps", "status": "ok"}

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { CandidatesModule } from './candidates/candidates.module';
 import { defaultDatabaseUrl, getTypeOrmOptions } from './config/typeorm.options';
@@ -25,5 +26,6 @@ import { SampleModule } from './sample/sample.module';
     LlmModule,
     SampleModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}
