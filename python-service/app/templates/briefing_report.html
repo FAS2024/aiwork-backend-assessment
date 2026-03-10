@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ report_title }}</title>
+    <style>
+      :root {
+        --text: #1f2937;
+        --text-muted: #6b7280;
+        --border: #e5e7eb;
+        --accent: #2563eb;
+        --bg-section: #f9fafb;
+      }
+      body {
+        font-family: Georgia, 'Times New Roman', serif;
+        margin: 0;
+        padding: 2rem;
+        color: var(--text);
+        line-height: 1.6;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      header {
+        border-bottom: 2px solid var(--border);
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        color: var(--text);
+      }
+      .company-meta {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+      }
+      .company-meta span + span::before {
+        content: " · ";
+      }
+      section {
+        margin-bottom: 1.5rem;
+      }
+      section h2 {
+        font-size: 1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        margin: 0 0 0.5rem 0;
+        padding-bottom: 0.25rem;
+      }
+      .summary, .recommendation {
+        background: var(--bg-section);
+        padding: 1rem;
+        border-radius: 6px;
+        border-left: 4px solid var(--accent);
+      }
+      ul.points {
+        margin: 0;
+        padding-left: 1.25rem;
+      }
+      ul.points li {
+        margin-bottom: 0.5rem;
+      }
+      .metrics-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+      }
+      .metrics-table th,
+      .metrics-table td {
+        text-align: left;
+        padding: 0.5rem 0.75rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .metrics-table th {
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+      footer {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        border-top: 1px solid var(--border);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>{{ report_title }}</h1>
+      <div class="company-meta">
+        <span>{{ ticker }}</span>
+        <span>{{ sector }}</span>
+        <span>Analyst: {{ analyst_name }}</span>
+      </div>
+    </header>
+
+    <section class="company-info">
+      <h2>Company</h2>
+      <p><strong>{{ company_name }}</strong> ({{ ticker }}) — {{ sector }}</p>
+    </section>
+
+    <section class="executive-summary">
+      <h2>Executive Summary</h2>
+      <div class="summary">{{ summary }}</div>
+    </section>
+
+    <section class="key-points">
+      <h2>Key Points</h2>
+      <ul class="points">
+        {% for point in key_points %}
+        <li>{{ point }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="risks">
+      <h2>Risks</h2>
+      <ul class="points">
+        {% for risk in risks %}
+        <li>{{ risk }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="recommendation">
+      <h2>Recommendation</h2>
+      <div class="recommendation">{{ recommendation }}</div>
+    </section>
+
+    {% if metrics %}
+    <section class="metrics">
+      <h2>Metrics</h2>
+      <table class="metrics-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in metrics %}
+          <tr>
+            <td>{{ m.name }}</td>
+            <td>{{ m.value }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+    {% endif %}
+
+    <footer>
+      Generated at {{ generated_at_display }} ({{ generated_at_iso }})
+    </footer>
+  </body>
+</html>

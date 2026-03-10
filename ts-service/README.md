@@ -1,18 +1,14 @@
-# TalentFlow TypeScript Service Starter
+# TalentFlow TypeScript Service
 
-NestJS starter service for the backend assessment.
+NestJS service for the backend assessment: **Candidate Document Intake + Summary Workflow**.
 
-This service includes:
+Features:
 
-- Nest bootstrap with global validation
-- TypeORM + migration setup
-- Fake auth context (`x-user-id`, `x-workspace-id`)
-- Tiny workspace-scoped sample module
-- Queue abstraction module
-- LLM provider abstraction with a fake summarization provider
-- Jest test setup
-
-The assessment-specific candidate document and summary workflow is intentionally not implemented.
+- Upload candidate documents (resume, cover letter, etc.) with `rawText`
+- Request summary generation (async via in-process queue/worker)
+- List and retrieve summaries per candidate
+- Workspace-scoped access: recruiters only see candidates in their workspace (`x-workspace-id` header)
+- **LLM**: When `GEMINI_API_KEY` is set, uses Google Gemini for summarization; otherwise uses the in-memory fake provider (no external calls). Get a free key at [Google AI Studio](https://aistudio.google.com/apikey).
 
 ## Prerequisites
 

@@ -1,17 +1,13 @@
-# InsightOps Python Service Starter
+# InsightOps Python Service
 
-FastAPI starter service for the backend assessment.
+FastAPI service for the backend assessment: **Mini Briefing Report Generator**.
 
-This service includes:
+Features:
 
-- FastAPI app bootstrap and health endpoint
-- SQLAlchemy wiring
-- Manual SQL migration runner
-- One small `sample_items` example feature
-- Jinja template wiring with a minimal base template
-- Pytest setup
-
-The assessment-specific briefing features are intentionally not implemented.
+- Create and retrieve briefings (structured company/analyst data)
+- Generate HTML reports via Jinja2 and a report view model
+- Fetch generated HTML
+- Validation: required fields, ticker uppercase, min 2 key points, min 1 risk, unique metric names per briefing
 
 ## Prerequisites
 
