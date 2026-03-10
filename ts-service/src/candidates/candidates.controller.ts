@@ -59,16 +59,6 @@ export class CandidatesController {
     this.summaryWorkerService.enqueueGenerateSummary(summary.id, candidateId);
     return summary;
   }
-    @CurrentUser() user: AuthUser,
-    @Param('candidateId') candidateId: string,
-  ): Promise<CandidateSummaryResponseDto> {
-    const summary = await this.candidatesService.requestSummaryGeneration(
-      candidateId,
-      user,
-    );
-    this.summaryWorkerService.enqueueGenerateSummary(summary.id, candidateId);
-    return summary;
-  }
 
   @Get(':candidateId/summaries')
   async listSummaries(

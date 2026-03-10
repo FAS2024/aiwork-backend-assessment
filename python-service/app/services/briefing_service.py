@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
@@ -104,7 +105,6 @@ def generate_report(db: Session, briefing_id: int) -> str | None:
     formatter = ReportFormatter()
     html = formatter.render_briefing_report(view_model)
 
-    from datetime import datetime, timezone
     briefing.generated_html = html
     briefing.generated_at = datetime.fromisoformat(
         view_model.generated_at_iso.replace("Z", "+00:00")

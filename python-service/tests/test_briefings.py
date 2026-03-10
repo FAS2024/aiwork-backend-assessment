@@ -146,3 +146,19 @@ def test_validation_metric_names_unique(client: TestClient) -> None:
     }
     resp = client.post("/briefings", json=payload)
     assert resp.status_code == 422
+
+
+def test_validation_non_empty_key_points(client: TestClient) -> None:
+    """At least 2 non-empty key points after stripping."""
+    payload = {
+        "companyName": "X",
+        "ticker": "X",
+        "sector": "S",
+        "analystName": "A",
+        "summary": "S",
+        "recommendation": "R",
+        "keyPoints": ["  ", "only one real"],
+        "risks": ["R"],
+    }
+    resp = client.post("/briefings", json=payload)
+    assert resp.status_code == 422

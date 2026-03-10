@@ -5,7 +5,16 @@ This repository contains two standalone backend services:
 - **python-service/** (InsightOps): FastAPI + SQLAlchemy — Mini Briefing Report Generator
 - **ts-service/** (TalentFlow): NestJS + TypeORM — Candidate Document Intake + Summary Workflow
 
-Both services use a shared PostgreSQL instance (via Docker).
+Both services use a shared PostgreSQL instance (via Docker). The solution is runnable locally following the steps below.
+
+## Submission checklist
+
+- **Setup instructions**: See sections 2 and 3 below.
+- **How to run both services**: Start Postgres (section 1), then run each service (sections 2 and 3).
+- **How to run migrations**: Python: `python -m app.db.run_migrations up` in `python-service/`. TypeScript: `npm run migration:run` in `ts-service/`.
+- **How to run tests**: Python: `pytest` in `python-service/`. TypeScript: `npm test` and `npm run test:e2e` in `ts-service/`.
+- **Assumptions and tradeoffs**: See "Assumptions and tradeoffs" at the end of this file.
+- **Design decisions, schema decisions, improvements**: See [NOTES.md](NOTES.md).
 
 ## Prerequisites
 
@@ -85,6 +94,12 @@ GEMINI_API_KEY=your_key_here
 
 Get a free key at [Google AI Studio](https://aistudio.google.com/apikey). If unset, the app uses an in-memory fake provider (no external calls).
 
+**LLM provider (for assessment documentation):**
+
+- **Provider used**: Google Gemini API (model: `gemini-1.5-flash`).
+- **Configure locally**: Set `GEMINI_API_KEY` in `ts-service/.env`. Do not commit this key; it is not in the repo.
+- **Assumptions/limitations**: Summary generation runs in-process on a 500ms polling loop; for production you would use a proper job queue (e.g. Bull/BullMQ). LLM output is requested as JSON and parsed/validated; malformed responses are caught and the summary is saved with `status: 'failed'` and an error message. Input text is truncated to ~28k characters to stay within model limits.
+
 ### Migrations
 
 ```bash
@@ -149,6 +164,8 @@ Candidates are created via the existing sample endpoint `POST /sample/candidates
 - **TypeScript**: Candidates are the existing `sample_candidates` (workspace-scoped). File content is passed as `rawText` in the request (no multipart file upload). Summary generation runs in a background worker (in-process polling every 500ms); for production you would use a proper job queue (e.g. Bull/BullMQ).
 - **LLM**: Gemini 1.5 Flash is used when `GEMINI_API_KEY` is set. Structured output is requested via JSON in the prompt; responses are parsed and validated. Invalid/malformed output is caught and the summary is marked as `failed` with an error message.
 - **Secrets**: No API keys or secrets are committed; use `.env` and document in README.
+
+Your solution should be runnable locally: start Postgres with `docker compose up -d postgres`, then run migrations and each service as above.
 
 ## Design decisions and schema notes
 

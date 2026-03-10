@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class MetricItem(BaseModel):
@@ -32,6 +32,16 @@ class BriefingCreate(BaseModel):
         if not isinstance(v, list):
             return v
         return [x.strip() if isinstance(x, str) else x for x in v]
+
+    @model_validator(mode="after")
+    def require_non_empty_points_and_risks(self) -> "BriefingCreate":
+        key_points = [s for s in self.keyPoints if s]
+        risks = [s for s in self.risks if s]
+        if len(key_points) < 2:
+            raise ValueError("at least 2 non-empty key points are required")
+        if len(risks) < 1:
+            raise ValueError("at least 1 non-empty risk is required")
+        return self
 
     @field_validator("metrics")
     @classmethod
